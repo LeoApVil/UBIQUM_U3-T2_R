@@ -4,6 +4,8 @@ import { TermSelector, TermButton, getCourseTerm, getCourseNumber} from './TermF
 
 import { courseConflict, hasConflict, toggle } from '../logic/ScheduleProcess';
 
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+
 
 export const Course = ({ course, selected, setSelected }) => {
 
@@ -12,13 +14,17 @@ export const Course = ({ course, selected, setSelected }) => {
   const style = {
     backgroundColor: isDisabled? 'lightgrey' : isSelected ? 'lightgreen' : 'white'
   };
+
+  const navigate = useNavigate();
   
   return (
-  <div className="card m-1 p-2" style = {style} onClick={isDisabled ? null : () =>  setSelected(toggle(course, selected))}>
+  <div className="card m-1 p-2" style = {style} onClick={isDisabled ? null : () =>  setSelected(toggle(course, selected))}
+      onDoubleClick={() => navigate('/edit', { state: course })}>
     <div className="card-body">
       <div className="card-title">{ getCourseTerm(course) } CS { getCourseNumber(course) }</div>
       <div className="card-text">{ course.title }</div>
       <div className="card-text">{ course.meets }</div>
+      
     </div>
   </div>)
 };
@@ -31,8 +37,12 @@ export const CourseList = ({ courses }) => {
 
   const allList = Object.values(courses);
   const [selected, setSelected] = useState([]);
-  
   const [term, setTerm] = useState('Fall');
+
+  if (selected.some(course => course !== courses[course.id])) {
+    setSelected([])
+  };
+
   const termCourses = allList.filter(course => term === getCourseTerm(course));
 
   return (

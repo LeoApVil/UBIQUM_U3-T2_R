@@ -4,7 +4,7 @@ const meetsPat = /^ *((?:M|Tu|W|Th|F)+) +(\d\d?):(\d\d) *[ -] *(\d\d?):(\d\d) *$
 
 const days = ['M', 'Tu', 'W', 'Th', 'F'];
 
-const timeParts = meets => {
+export const timeParts = meets => {
   const [match, days, hh1, mm1, hh2, mm2] = meetsPat.exec(meets) || [];
   return !match ? {} : {
     days,
@@ -23,11 +23,14 @@ export const toggle = (x, lst) => (
   lst.includes(x) ? lst.filter(y => y !== x) : [x, ...lst]
 );
 
+// 1. Modificamos mapValues para pasar la clave (key) a la función fn
 const mapValues = (fn, obj) => (
-  Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, fn(value)]))
+  Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, fn(value, key)]))
 );
 
-const addCourseTimes = course => ({
+// 2. addCourseTimes recibe la key y la agrega como id al objeto del curso
+const addCourseTimes = (course, id) => ({
+  id, // <--- AQUÍ agregamos la key ("F101", "S394", etc.) como el id del curso
   ...course,
   ...timeParts(course.meets)
 });
